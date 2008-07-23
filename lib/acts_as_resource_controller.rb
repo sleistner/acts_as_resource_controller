@@ -37,7 +37,6 @@ module ActsAsResourceController
       self.instances = with_scope do
         options = returning(:order => order) do |o|
           o[:conditions] = ["#{belongs_to_id} = ?", params[belongs_to_id]] if belongs_to?
-          o[:joins] = joins unless joins.nil?
         end
         model.find :all, options
       end
@@ -117,11 +116,11 @@ module ActsAsResourceController
     def extend_to_format obj
       obj.instance_variable_set "@format_options", format_options
       
-      # TODO: refactore the lines below to an simple :format for loop
       obj.class.send(:alias_method, :to_json_orig, :to_json)
       def obj.to_json options = {}
         to_json_orig options.merge(@format_options)
       end
+
       obj.class.send(:alias_method, :to_xml_orig, :to_xml)
       def obj.to_xml options = {}
         to_xml_orig options.merge(@format_options)
